@@ -1,3 +1,5 @@
+import random
+
 REQUIRED_MIDDLE_DOT= {
     (1, 3): 2,
     (3, 1): 2,
@@ -19,9 +21,8 @@ REQUIRED_MIDDLE_DOT= {
 
 class PatternSolver:
     def __init__(self):
-        self.current_pattern = [2,4]
+        self.current_pattern = []
         self.step_limit = 4
-        self.step_counter = 0
         pass
 
     def validate_move(self, curr_dot, next_dot):
@@ -36,8 +37,39 @@ class PatternSolver:
         else:
             return True
 
+    def solve(self):
 
+        if self.isPatternSolved():
+            return self.current_pattern
+
+        if self.current_pattern == []:
+            current_dot = random.randint(1, 9)
+            self.current_pattern.append(current_dot)
+            print(self.current_pattern)
+            return self.current_pattern
+        else:
+            current_dot = self.current_pattern[-1]
+
+
+        valid_next_steps = self.get_valid_moves(current_dot)
+        self.current_pattern.append(random.choice(valid_next_steps))
+        print(self.current_pattern)
+        return None
+
+    def get_valid_moves(self,current_dot):
+        all_moves = [1,2,3,4,5,6,7,8,9]
+        valid_moves = []
+        for move in all_moves:
+            if self.validate_move(current_dot, move):
+                valid_moves.append(move)
+        return valid_moves
+
+    def isPatternSolved(self):
+        return len(self.current_pattern) >= self.step_limit
 
 
 solver = PatternSolver()
-print(solver.validate_move(1, 7))
+solver.solve()
+solver.solve()
+solver.solve()
+solver.solve()
