@@ -20,6 +20,8 @@ REQUIRED_MIDDLE_DOT= {
 class PatternSolver:
     def __init__(self):
         self.current_pattern = [2,4]
+        self.step_limit = 4
+        self.step_counter = 0
         pass
 
     def validate_move(self, curr_dot, next_dot):
