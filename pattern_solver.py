@@ -38,10 +38,7 @@ class PatternSolver:
         else:
             return True
 
-
-
-
-    def solve(self,pattern):
+    def solve_dfs(self, pattern):
 
         if len(pattern) >= 4:
             self.number_of_sequences += 1
@@ -54,7 +51,19 @@ class PatternSolver:
 
         for move in valid_moves:
             new_pattern = pattern + [move]
-            self.solve(new_pattern)
+            self.solve_dfs(new_pattern)
+
+    def is_valid_sequence(self, pattern):
+        return None
+
+    def is_max_length(self, pattern):
+        return None
+
+    def handle_pattern(self, pattern):
+        return None
+
+    def solve_bfs(self, pattern):
+        return None
 
 
     def get_valid_moves(self,current_dot,pattern):
@@ -71,15 +80,15 @@ class PatternSolver:
 
 solver = PatternSolver()
 start_time = time.perf_counter()
-solver.solve([1])
-solver.solve([2])
-solver.solve([3])
-solver.solve([4])
-solver.solve([5])
-solver.solve([6])
-solver.solve([7])
-solver.solve([8])
-solver.solve([9])
+solver.solve_dfs([1])
+solver.solve_dfs([2])
+solver.solve_dfs([3])
+solver.solve_dfs([4])
+solver.solve_dfs([5])
+solver.solve_dfs([6])
+solver.solve_dfs([7])
+solver.solve_dfs([8])
+solver.solve_dfs([9])
 end_time = time.perf_counter()
 print(solver.number_of_sequences)
 print(f"Ellapsed {round(end_time - start_time,2)} seconds")
