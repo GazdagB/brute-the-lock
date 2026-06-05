@@ -137,3 +137,7 @@ BFS goes **wide first**:
 ```
 
 In this project, DFS is useful for quickly exploring complete patterns, while BFS is useful for generating patterns in order of length, such as all 4-dot patterns first, then all 5-dot patterns, and so on.
+
+## The Visualisation
+
+This application uses Tkinter to draw and simulate the solver visually.
