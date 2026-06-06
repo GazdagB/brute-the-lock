@@ -26,6 +26,7 @@ REQUIRED_MIDDLE_DOT = {
 class PatternSolver:
     def __init__(self):
         self.max_length = MAX_SEQUENCE_DIGITS
+        self.min_length = MIN_SEQUENCE_DIGITS
         pass
 
     def is_valid_move(self, curr_dot, next_dot, pattern):
@@ -40,9 +41,10 @@ class PatternSolver:
 
         return middle_dot in pattern
 
-    def brute_dfs(self, up_to_length = MAX_SEQUENCE_DIGITS, do_print = False):
+    def brute_dfs(self, from_length = MAX_SEQUENCE_DIGITS, up_to_length = MAX_SEQUENCE_DIGITS, do_print = False):
         results = []
         self.max_length = up_to_length
+        self.min_length = from_length
 
         def dfs(pattern):
             if self.is_valid_sequence(pattern):
@@ -66,13 +68,14 @@ class PatternSolver:
 
 
     def is_valid_sequence(self, pattern):
-        return len(pattern) >= MIN_SEQUENCE_DIGITS
+        return len(pattern) >= self.min_length
 
     def is_max_length(self, pattern):
         return len(pattern) >= self.max_length
 
-    def brute_bfs(self, up_to_length = MAX_SEQUENCE_DIGITS, do_print = False):
+    def brute_bfs(self,from_length = MIN_SEQUENCE_DIGITS, up_to_length = MAX_SEQUENCE_DIGITS, do_print = False):
         self.max_length = up_to_length
+        self.min_length = from_length
 
         queue = [[1],[2],[3],[4],[5],[6],[7],[8],[9]]
         result = []
@@ -81,7 +84,7 @@ class PatternSolver:
 
             pattern = queue.pop(0)
 
-            if len(pattern) >= MIN_SEQUENCE_DIGITS:
+            if len(pattern) >= self.min_length:
                 result.append(pattern)
                 if do_print:
                     print(pattern)
