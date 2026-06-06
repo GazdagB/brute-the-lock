@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+from PatternSolver import PatternSolver
+
+solver = PatternSolver()
 
 WINDOW_SIZE = 600
 INNER_DOT_RADIUS = 10
@@ -21,25 +24,106 @@ DOT_POSITIONS = {
 
 class PatternVisualizer:
     def __init__(self, root):
+        self.is_visualizing = False
         self.root = root
         self.root.title("Pattern Visualizer")
-        self.root.geometry(f"{WINDOW_SIZE}x{WINDOW_SIZE}")
+        self.root.geometry("1200x600")
+        self.root.resizable(False, False)
+
         self.delete_queue = []
 
+        # Canvas
         self.canvas = tk.Canvas(
             self.root,
             width=WINDOW_SIZE,
             height=WINDOW_SIZE,
             bg="lightgrey",
         )
-        self.canvas.pack()
-        self.draw_dots()
-        self.root.resizable(False, False)
-        self.draw_pattern([1,2,3,4,5,6,7,8,9])
-        self.draw_dots()
+        self.canvas.pack(side="left")
 
-    def draw_dots(self):
+        # Control panel
+        self.controls = tk.Frame(
+            self.root,
+            width=WINDOW_SIZE,
+            height=WINDOW_SIZE,
+            bg="#222222"
+        )
+        self.controls.pack(side="left")
+        self.controls.pack_propagate(False)
+
+        self.draw_dots([])
+
+        # Title
+        self.title_label = tk.Label(
+            self.controls,
+            text="Pattern Visualizer",
+            font=("Arial", 24, "bold"),
+            fg="white",
+            bg="#222222",
+        )
+        self.title_label.pack(pady=30)
+
+        # Info
+        self.info_label = tk.Label(
+            self.controls,
+            text="Pattern length: 4",
+            font=("Arial", 16),
+            fg="white",
+            bg="#222222",
+        )
+        self.info_label.pack(pady=10)
+
+        # Input
+        self.length_entry = tk.Entry(
+            self.controls,
+            font=("Arial", 16),
+            width=10,
+            justify="center",
+        )
+        self.length_entry.insert(0, "4")
+        self.length_entry.pack(pady=10)
+
+        # Start button
+        self.start_button = tk.Button(
+            self.controls,
+            text="Start",
+            font=("Arial", 16),
+            command=self.start_visualization,
+        )
+        self.start_button.pack(pady=10)
+
+        # Stop button
+        self.stop_button = tk.Button(
+            self.controls,
+            text="Stop",
+            font=("Arial", 16),
+            command=self.stop_visualization,
+        )
+        self.stop_button.pack(pady=10)
+
+
+    def start_visualization(self):
+        length = int(self.length_entry.get())
+        print(length)
+        if self.is_visualizing:
+            return
+        self.is_visualizing = True
+        self.draw_pattern(solver.brute_bfs(length))
+
+    def stop_visualization(self):
+        self.is_visualizing = False
+        return None
+
+    def draw_dots(self, pattern):
         for dot_number, (x, y) in DOT_POSITIONS.items():
+
+            outline_color = "white"
+            small_dot_color = "white"
+
+            if dot_number in pattern:
+                outline_color = ACTIVE_COLOR
+                small_dot_color = ACTIVE_COLOR
+
             # Inner dots
             self.delete_queue.append((self.canvas.create_oval(
                 x - OUTER_DOT_RADIUS,
@@ -47,7 +131,7 @@ class PatternVisualizer:
                 x + OUTER_DOT_RADIUS,
                 y + OUTER_DOT_RADIUS,
                 fill="grey",
-                outline=ACTIVE_COLOR,
+                outline=outline_color,
                 width=2,
             )))
 
@@ -56,24 +140,36 @@ class PatternVisualizer:
                 y - INNER_DOT_RADIUS,
                 x + INNER_DOT_RADIUS,
                 y + INNER_DOT_RADIUS,
-                fill=ACTIVE_COLOR,
-                outline=ACTIVE_COLOR,
+                fill=small_dot_color,
+                outline=small_dot_color,
                 width=2,
             ))
 
 
 
-    def draw_pattern(self, pattern):
+    def draw_pattern(self, patterns):
+
+        if not self.is_visualizing:
+            return
+
+        if len(patterns) == 0:
+            self.is_visualizing = False
+            return
+
         for to_delete in self.delete_queue:
             self.canvas.delete(to_delete)
 
-        for index in range(len(pattern) -1):
+        self.canvas.delete("pattern_line")
 
+        pattern = patterns.pop(0)
+
+        for index in range(len(pattern) -1):
             current_dot = pattern[index]
             next_dot = pattern[index+1]
 
             if index >= len(pattern) - 1:
                 continue
+
             self.canvas.create_line(
                 DOT_POSITIONS[current_dot][0],
                 DOT_POSITIONS[current_dot][1],
@@ -81,7 +177,11 @@ class PatternVisualizer:
                 DOT_POSITIONS[next_dot][1],
                 fill=ACTIVE_COLOR,
                 width=10,
+                tags="pattern_line"
             )
+        self.draw_dots(pattern)
+        self.root.after(10,lambda: self.draw_pattern(patterns))
+
 
 
 root = tk.Tk()
