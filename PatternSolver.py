@@ -27,6 +27,8 @@ class PatternSolver:
     def __init__(self):
         self.max_length = MAX_SEQUENCE_DIGITS
         self.min_length = MIN_SEQUENCE_DIGITS
+        self.start_time = time.time()
+        self.end_time = time.time()
         pass
 
     def is_valid_move(self, curr_dot, next_dot, pattern):
@@ -42,6 +44,7 @@ class PatternSolver:
         return middle_dot in pattern
 
     def brute_dfs(self, from_length = MAX_SEQUENCE_DIGITS, up_to_length = MAX_SEQUENCE_DIGITS, do_print = False):
+        self.start_time = time.time()
         results = []
         self.max_length = up_to_length
         self.min_length = from_length
@@ -64,7 +67,11 @@ class PatternSolver:
         for start_dot in range(1, 10):
             dfs([start_dot])
 
-        return results
+        self.end_time = time.time()
+        return {
+            "patterns": results,
+            "comp_time": self.end_time - self.start_time,
+                }
 
 
     def is_valid_sequence(self, pattern):
@@ -97,8 +104,11 @@ class PatternSolver:
             for move in valid_moves:
                 new_pattern = pattern + [move]
                 queue.append(new_pattern)
-
-        return result
+        self.end_time = time.time()
+        return {
+            "patterns": result,
+            "comp_time": self.end_time - self.start_time,
+        }
 
     def get_valid_moves(self,current_dot,pattern):
         valid_moves = []
