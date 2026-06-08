@@ -1,7 +1,7 @@
 # Brute The Lock
-![img.png](assets/img.png)
+![brute-force.gif](assets/brute-force.gif)
 
-Brute The Lock is an educational Python simulator that demonstrates how Android-style 3×3 pattern locks can be generated, validated, and explored using DFS and BFS search algorithms.
+**Brute The Lock is an educational Python simulator that demonstrates how Android-style 3×3 pattern locks can be generated**, validated, and explored using DFS and BFS search algorithms.
 The project was inspired by a discussion about the total number of valid Android lock patterns after hearing a story about someone who had lost access to a 
 Bitcoin wallet because they could not remember their pattern. This led to a simple question: how many possible patterns are there, and how would a computer systematically explore them?
 The goal of this project is to learn about graph traversal, backtracking, brute-force search, and pattern validation in a visual and interactive way.
@@ -17,6 +17,38 @@ The goal of this project is to learn about graph traversal, backtracking, brute-
 
 ---
 
+## Installation
+
+Clone the repository:
+
+```cmd
+git clone https://github.com/yourusername/brute-the-lock.git
+cd brute-the-lock
+```
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+## Running the Application
+
+Launch the application with:
+
+```
+python main.py
+```
+The GUI window will open and allow you to generate, validate, and visualize Android-style lock patterns.
+
+## Features
+
+- Generate valid Android-style pattern lock combinations
+- Visualize patterns in real time
+- Explore patterns using DFS or BFS
+- Adjustable minimum and maximum pattern lengths
+- Pattern validation based on Android lock rules
+- Interactive desktop GUI built with Tkinter and CustomTkinter
+
 ## Grid Numbering
 Since a computer cannot interpret the visual pattern directly, each dot in the 3×3 grid must be represented by a number. 
 This allows the pattern to be stored, processed, and validated using standard data structures and algorithms.
@@ -26,6 +58,8 @@ This allows the pattern to be stored, processed, and validated using standard da
 4 5 6
 7 8 9
 ```
+
+![img.png](assets/numbered_dots.png)
 
 ## Required Middle Dots
 When drawing an Android pattern, some moves are not allowed because another dot lies directly between the starting and destination dots.
@@ -140,4 +174,29 @@ In this project, DFS is useful for quickly exploring complete patterns, while BF
 
 ## The Visualisation
 
-This application uses Tkinter to draw and simulate the solver visually.
+This application uses Tkinter and Custom Tkinter to visualise the pattern and to run the application in a desktop window.
+
+## What I Learned
+
+This project helped me practice and better understand:
+
+- Graph traversal algorithms
+- Depth-First Search (DFS)
+- Breadth-First Search (BFS)
+- Recursive backtracking
+- Queue-based exploration
+- State validation
+- GUI development with Tkinter and CustomTkinter
+- Visualizing algorithm behavior
+
+## Future Improvements 
+
+Potential future additions may be: 
+
+- Animated visualization 
+- DFS and BFS Performance benchmarking 
+- Adding Step by step solving 
+- Pattern Export Functionality 
+- Pattern History Sidebar
+
+Any contributions are welcome and appreciated! 
