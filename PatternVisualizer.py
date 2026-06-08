@@ -1,6 +1,7 @@
 import tkinter as tk
 from PatternSolver import PatternSolver
 import time
+import customtkinter
 
 solver = PatternSolver()
 
@@ -10,25 +11,20 @@ OUTER_DOT_RADIUS = 50
 ACTIVE_COLOR = "#00adff"
 
 DOT_POSITIONS = {
-    1: (100, 100),
-    2: (300, 100),
-    3: (500, 100),
-    4: (100, 300),
-    5: (300, 300),
-    6: (500, 300),
-    7: (100, 500),
-    8: (300, 500),
-    9: (500, 500),
+    1: (100, 100), 2: (300, 100), 3: (500, 100),
+    4: (100, 300), 5: (300, 300), 6: (500, 300),
+    7: (100, 500), 8: (300, 500), 9: (500, 500),
 }
 
 
 class PatternVisualizer:
-    def __init__(self, root):
+    def __init__(self, app):
         self.is_visualizing = False
-        self.root = root
-        self.root.title("Pattern Visualizer")
-        self.root.geometry("1200x600")
-        self.root.resizable(False, False)
+        self.app = app
+
+        self.app.title("Android Pattern - Lock Bruteforce Visualizer")
+        self.app.geometry("1200x600")
+        self.app.resizable(False, False)
 
         self.delete_queue = []
         self.pattern_count = 0
@@ -38,170 +34,151 @@ class PatternVisualizer:
         self.algorithm_var = tk.StringVar(value="DFS")
         self.speed_var = tk.IntVar(value=50)
 
-        self.canvas = tk.Canvas(
-            self.root,
+        self.app.grid_columnconfigure(0, weight=0)
+        self.app.grid_columnconfigure(1, weight=1)
+        self.app.grid_rowconfigure(0, weight=1)
+
+        self.canvas = customtkinter.CTkCanvas(
+            self.app,
             width=WINDOW_SIZE,
             height=WINDOW_SIZE,
             bg="lightgrey",
         )
-        self.canvas.pack(side="left", fill="both")
-
-        self.controls = tk.Frame(
-            self.root,
-            width=WINDOW_SIZE,
-            height=WINDOW_SIZE,
-            bg="#222222"
-        )
-        self.controls.pack(side="left", fill="both", expand=True)
-        self.controls.pack_propagate(False)
-
-        self.controls.grid_columnconfigure(0, weight=1)
-        self.controls.grid_columnconfigure(1, weight=1)
-
-        for row in range(9):
-            self.controls.grid_rowconfigure(row, weight=0)
-
+        self.canvas.grid(row=0, column=0, sticky="nsew")
         self.draw_dots([])
 
-        self.title_label = tk.Label(
+        self.controls = customtkinter.CTkFrame(
+            self.app,
+            width=WINDOW_SIZE,
+            height=WINDOW_SIZE,
+            fg_color="#222222"
+        )
+        self.controls.grid(row=0, column=1, sticky="nsew")
+        self.controls.grid_columnconfigure(0, weight=1)
+
+        self.radio_frame = customtkinter.CTkFrame(self.controls, fg_color="transparent")
+        self.input_frame = customtkinter.CTkFrame(self.controls, fg_color="transparent")
+        self.button_frame = customtkinter.CTkFrame(self.controls, fg_color="transparent")
+
+        self.title_label = customtkinter.CTkLabel(
             self.controls,
             text="Pattern Visualizer",
             font=("Arial", 24, "bold"),
-            fg="white",
-            bg="#222222",
         )
-        self.title_label.grid(row=0, column=0, columnspan=2, pady=(25, 25), sticky="ew")
 
-        self.algorithm_label = tk.Label(
-            self.controls,
+        self.algorithm_label = customtkinter.CTkLabel(
+            self.radio_frame,
             text="Solving method:",
-            font=("Arial", 14),
-            fg="white",
-            bg="#222222",
+            font=("Arial", 20),
         )
-        self.algorithm_label.grid(row=1, column=0, columnspan=2, pady=(0, 5), sticky="ew")
 
-        self.dfs_radio = tk.Radiobutton(
-            self.controls,
+        self.dfs_radio = customtkinter.CTkRadioButton(
+            self.radio_frame,
             text="DFS",
             variable=self.algorithm_var,
             value="DFS",
-            font=("Arial", 13),
-            fg="white",
-            bg="#222222",
-            selectcolor="#222222",
-            activebackground="#222222",
-            activeforeground="white",
+            width=70,
         )
-        self.dfs_radio.grid(row=2, column=0, sticky="e", padx=20)
 
-        self.bfs_radio = tk.Radiobutton(
-            self.controls,
+        self.bfs_radio = customtkinter.CTkRadioButton(
+            self.radio_frame,
             text="BFS",
             variable=self.algorithm_var,
             value="BFS",
-            font=("Arial", 13),
-            fg="white",
-            bg="#222222",
-            selectcolor="#222222",
-            activebackground="#222222",
-            activeforeground="white",
+            width=70,
         )
-        self.bfs_radio.grid(row=2, column=1, sticky="w", padx=20)
 
-        self.min_label = tk.Label(
-            self.controls,
+        self.min_label = customtkinter.CTkLabel(
+            self.input_frame,
             text="Minimum length:",
             font=("Arial", 14),
-            fg="white",
-            bg="#222222",
         )
-        self.min_label.grid(row=3, column=0, pady=(25, 5), sticky="ew")
 
-        self.max_label = tk.Label(
-            self.controls,
+        self.max_label = customtkinter.CTkLabel(
+            self.input_frame,
             text="Maximum length:",
             font=("Arial", 14),
-            fg="white",
-            bg="#222222",
         )
-        self.max_label.grid(row=3, column=1, pady=(25, 5), sticky="ew")
 
-        self.start_entry = tk.Entry(
-            self.controls,
+        self.start_entry = customtkinter.CTkEntry(
+            self.input_frame,
             font=("Arial", 16),
-            width=8,
+            width=80,
+            placeholder_text="4",
             justify="center",
         )
-        self.start_entry.insert(0, "4")
-        self.start_entry.grid(row=4, column=0, padx=50, sticky="ew")
 
-        self.end_entry = tk.Entry(
-            self.controls,
+        self.end_entry = customtkinter.CTkEntry(
+            self.input_frame,
             font=("Arial", 16),
-            width=8,
+            placeholder_text="9",
+            width=80,
             justify="center",
         )
-        self.end_entry.insert(0, "4")
-        self.end_entry.grid(row=4, column=1, padx=50, sticky="ew")
 
-        self.speed_label = tk.Label(
+        self.speed_label = customtkinter.CTkLabel(
             self.controls,
             text="Visualization speed:",
             font=("Arial", 14),
-            fg="white",
-            bg="#222222",
         )
-        self.speed_label.grid(row=5, column=0, columnspan=2, pady=(30, 5), sticky="ew")
 
-        self.speed_slider = tk.Scale(
+        self.speed_slider = customtkinter.CTkSlider(
             self.controls,
             from_=200,
             to=1,
-            orient="horizontal",
             variable=self.speed_var,
-            bg="#222222",
-            fg="white",
-            troughcolor="#444444",
-            highlightthickness=0,
+            width=250,
         )
-        self.speed_slider.grid(row=6, column=0, columnspan=2, padx=70, sticky="ew")
 
-        self.start_button = tk.Button(
-            self.controls,
+        self.start_button = customtkinter.CTkButton(
+            self.button_frame,
             text="Start",
             font=("Arial", 16),
-            width=8,
+            width=100,
             command=self.start_visualization,
         )
-        self.start_button.grid(row=7, column=0, pady=25, sticky="e", padx=20)
 
-        self.stop_button = tk.Button(
-            self.controls,
+        self.stop_button = customtkinter.CTkButton(
+            self.button_frame,
             text="Stop",
             font=("Arial", 16),
-            width=8,
+            width=100,
             command=self.stop_visualization,
         )
-        self.stop_button.grid(row=7, column=1, pady=25, sticky="w", padx=20)
 
-        self.summary_label = tk.Label(
+        self.summary_label = customtkinter.CTkLabel(
             self.controls,
             text="Summary:\nWaiting for start...",
             font=("Arial", 13),
-            fg="white",
-            bg="#222222",
-            justify="left",
-            anchor="w",
         )
-        self.summary_label.grid(
-            row=8,
-            column=0,
-            columnspan=2,
-            padx=80,
-            pady=(5, 0),
-            sticky="ew"
+
+        self.progress_bar = customtkinter.CTkProgressBar(
+            self.controls,
         )
+
+        self.title_label.grid(row=0, column=0, pady=(35, 30))
+
+        self.radio_frame.grid(row=1, column=0, pady=(0, 30))
+        self.algorithm_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
+        self.dfs_radio.grid(row=1, column=0, padx=20)
+        self.bfs_radio.grid(row=1, column=1, padx=20)
+
+        self.input_frame.grid(row=2, column=0, pady=(0, 30))
+        self.min_label.grid(row=0, column=0, padx=10, pady=8, sticky="e")
+        self.start_entry.grid(row=0, column=1, padx=10, pady=8)
+        self.max_label.grid(row=1, column=0, padx=10, pady=8, sticky="e")
+        self.end_entry.grid(row=1, column=1, padx=10, pady=8)
+
+        self.speed_label.grid(row=3, column=0, pady=(0, 10))
+        self.speed_slider.grid(row=4, column=0, pady=(0, 30))
+
+        self.button_frame.grid(row=5, column=0, pady=(0, 30))
+        self.start_button.grid(row=0, column=0, padx=15)
+        self.stop_button.grid(row=0, column=1, padx=15)
+
+        self.summary_label.grid(row=6, column=0)
+        self.progress_bar.grid(row=7, column=0)
+        self.progress_bar.set(0)
 
     def validate_inputs(self):
         try:
@@ -209,28 +186,29 @@ class PatternVisualizer:
             end = int(self.end_entry.get())
 
             if start < 1 or end < 1:
-                self.summary_label.config(text="Error: values must be at least 1.")
+                self.summary_label.configure(text="Error: values must be at least 1.")
                 return None, None
 
             if start > 9 or end > 9:
-                self.summary_label.config(text="Error: maximum value is 9.")
+                self.summary_label.configure(text="Error: maximum value is 9.")
                 return None, None
 
             if start > end:
-                self.summary_label.config(text="Error: min cannot be greater than max.")
+                self.summary_label.configure(text="Error: min cannot be greater than max.")
                 return None, None
 
             return start, end
 
         except ValueError:
-            self.summary_label.config(text="Error: please enter valid numbers.")
-            return None, None
+            self.summary_label.configure(text="Error: please enter valid numbers.")
+            return 4, 9
 
     def start_visualization(self):
         if self.is_visualizing:
             return
 
         start, end = self.validate_inputs()
+        self.start_button["state"] = "disabled"
 
         if start is None or end is None:
             return
@@ -243,15 +221,15 @@ class PatternVisualizer:
         if algorithm == "DFS":
             res_object = solver.brute_dfs(start, end)
             patterns = res_object["patterns"]
-            self.comp_time = round(res_object["comp_time"],4)
+            self.comp_time = round(res_object["comp_time"], 4)
         else:
             res_object = solver.brute_bfs(start, end)
             patterns = res_object["patterns"]
-            self.comp_time = round(res_object["comp_time"],3)
+            self.comp_time = round(res_object["comp_time"], 4)
 
         self.pattern_count = len(patterns)
 
-        self.summary_label.config(
+        self.summary_label.configure(
             text=f"Summary:\n"
                  f"Algorithm: {algorithm}\n"
                  f"Possible patterns: {self.pattern_count}\n"
@@ -263,16 +241,12 @@ class PatternVisualizer:
 
     def stop_visualization(self):
         self.is_visualizing = False
-        self.summary_label.config(text="Summary:\nVisualization stopped.")
+        self.summary_label.configure(text="Summary:\nVisualization stopped.")
 
     def draw_dots(self, pattern):
         for dot_number, (x, y) in DOT_POSITIONS.items():
-            outline_color = "white"
-            small_dot_color = "white"
-
-            if dot_number in pattern:
-                outline_color = ACTIVE_COLOR
-                small_dot_color = ACTIVE_COLOR
+            outline_color = ACTIVE_COLOR if dot_number in pattern else "white"
+            small_dot_color = ACTIVE_COLOR if dot_number in pattern else "white"
 
             self.delete_queue.append(self.canvas.create_oval(
                 x - OUTER_DOT_RADIUS,
@@ -302,7 +276,7 @@ class PatternVisualizer:
             self.is_visualizing = False
             painting_time = time.time() - self.start_time
 
-            self.summary_label.config(
+            self.summary_label.configure(
                 text=f"Summary:\n"
                      f"Algorithm: {self.algorithm_var.get()}\n"
                      f"Possible patterns: {self.pattern_count}\n"
@@ -318,6 +292,7 @@ class PatternVisualizer:
         self.canvas.delete("pattern_line")
 
         pattern = patterns.pop(0)
+        self.progress_bar.set(1 - (len(patterns) / self.pattern_count))
 
         for index in range(len(pattern) - 1):
             current_dot = pattern[index]
@@ -336,9 +311,9 @@ class PatternVisualizer:
         self.draw_dots(pattern)
 
         delay = self.speed_var.get()
-        self.root.after(delay, lambda: self.draw_pattern(patterns))
+        self.app.after(delay, lambda: self.draw_pattern(patterns))
 
 
-root = tk.Tk()
-app = PatternVisualizer(root)
-root.mainloop()
+app = customtkinter.CTk()
+PatternVisualizer(app)
+app.mainloop()

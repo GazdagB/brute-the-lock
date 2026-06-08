@@ -68,11 +68,17 @@ class PatternSolver:
             dfs([start_dot])
 
         self.end_time = time.time()
+        comp_time = self.end_time - self.start_time
+        self.reset_timers()
         return {
             "patterns": results,
-            "comp_time": self.end_time - self.start_time,
+            "comp_time": comp_time,
                 }
 
+
+    def reset_timers(self):
+        self.end_time = 0
+        self.start_time = 0
 
     def is_valid_sequence(self, pattern):
         return len(pattern) >= self.min_length
@@ -105,9 +111,12 @@ class PatternSolver:
                 new_pattern = pattern + [move]
                 queue.append(new_pattern)
         self.end_time = time.time()
+        comp_time = self.end_time - self.start_time
+        self.reset_timers()
+        print(comp_time)
         return {
             "patterns": result,
-            "comp_time": self.end_time - self.start_time,
+            "comp_time": comp_time,
         }
 
     def get_valid_moves(self,current_dot,pattern):
